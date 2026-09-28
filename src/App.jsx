@@ -199,7 +199,7 @@ function App() {
         onClick={toggleSound}
       >
         <span aria-hidden="true">ॐ</span>
-        {soundEnabled ? 'Mantra sound on' : 'Enable mantra sound'}
+        {soundEnabled ? ' sound on' : 'Enable sound'}
       </button>
       {soundUnavailable && <span className="sound-error" role="status">Mantra audio could not be played.</span>}
     </main>

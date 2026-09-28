@@ -1,0 +1,126 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: "Nirmala UI", "Noto Serif Devanagari", serif;
+  color: #f6bb70;
+  background: #050403;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #050403;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #050403;
+  isolation: isolate;
+}
+
+.stage::before,
+.stage::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.stage::before {
+  z-index: 0;
+  background-image: url("/mahadev.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  filter: saturate(0.78) brightness(0.86);
+}
+
+.stage::after {
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgb(3 3 3 / 16%), rgb(3 3 3 / 30%) 55%, rgb(3 3 3 / 52%)),
+    linear-gradient(90deg, rgb(3 3 3 / 14%), transparent 45%, rgb(3 3 3 / 14%));
+}
+
+.om-symbol {
+  position: fixed;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 1.8em;
+  height: 1.8em;
+  translate: -50% -50%;
+  color: #ffd18a;
+  font-size: 4rem;
+  line-height: 1;
+  opacity: var(--trail-opacity);
+  pointer-events: none;
+  user-select: none;
+  transform: scale(var(--rest-scale));
+  transition: transform 240ms cubic-bezier(0.2, 0.75, 0.25, 1);
+  filter: drop-shadow(0 0 12px rgb(255 171 74 / 75%)) drop-shadow(0 0 42px rgb(242 105 32 / 38%));
+}
+
+.om-symbol.is-active {
+  transform: scale(var(--active-scale));
+}
+
+.om-symbol::before {
+  position: absolute;
+  z-index: -1;
+  width: 65%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgb(226 111 39 / 17%);
+  content: "";
+  filter: blur(32px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .om-symbol {
+    transition: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .om-symbol {
+    font-size: 3.25rem;
+  }
+
+  .om-symbol::before {
+    filter: blur(24px);
+  }
+}
+
+@media (max-width: 360px) {
+  .om-symbol {
+    font-size: 3rem;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 768px) {
+  .stage::before {
+    background-size: cover;
+    background-position: center 42%;
+  }
+}

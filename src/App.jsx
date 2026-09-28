@@ -14,8 +14,7 @@ function App() {
 
     const placeSymbols = () => {
       positions.forEach((position, index) => {
-        symbols[index].style.left = `${position.x}px`;
-        symbols[index].style.top = `${position.y}px`;
+        symbols[index].style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
       });
     };
 
@@ -98,9 +97,10 @@ function App() {
               '--rest-scale': 0.58 * scale,
               '--active-scale': scale,
               '--trail-opacity': 0.84 ** index,
+              zIndex: 20 - index,
             }}
           >
-            ॐ
+            <span className="om-glyph">ॐ</span>
           </div>
         );
       })}

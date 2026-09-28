@@ -50,9 +50,9 @@ body {
 .stage::before {
   z-index: 0;
   background-image: url("/mahadev.jpg");
-  background-position: center;
+  background-position: center 38%;
   background-repeat: no-repeat;
-  background-size: auto 100%;
+  background-size: cover;
   filter: saturate(0.78) brightness(0.86);
 }
 
@@ -61,6 +61,92 @@ body {
   background:
     linear-gradient(180deg, rgb(3 3 3 / 16%), rgb(3 3 3 / 30%) 55%, rgb(3 3 3 / 52%)),
     linear-gradient(90deg, rgb(3 3 3 / 14%), transparent 45%, rgb(3 3 3 / 14%));
+}
+
+.mantra-marquee {
+  position: fixed;
+  z-index: 3;
+  right: 0;
+  bottom: calc(clamp(16px, 5vh, 52px) + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  overflow: hidden;
+  padding: 14px 0;
+  border-block: 1px solid rgb(255 209 138 / 20%);
+  background: rgb(5 4 3 / 48%);
+  color: #f5d4a3;
+  pointer-events: none;
+}
+
+.mantra-track {
+  display: flex;
+  width: max-content;
+  animation: mantra-scroll 44s linear infinite;
+  will-change: transform;
+}
+
+.mantra-track span {
+  flex: 0 0 auto;
+  padding-right: 6rem;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 85%);
+}
+
+@keyframes mantra-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.sound-toggle {
+  position: fixed;
+  z-index: 30;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(16px, 5vh, 52px) + 74px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid rgb(255 209 138 / 42%);
+  border-radius: 4px;
+  background: rgb(5 4 3 / 78%);
+  color: #ffe0ad;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.sound-toggle:hover {
+  border-color: rgb(255 209 138 / 75%);
+  background: rgb(31 21 13 / 88%);
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid #ffd18a;
+  outline-offset: 3px;
+}
+
+.sound-toggle span {
+  min-width: 1em;
+  color: #ffd18a;
+  text-align: center;
+}
+
+.sound-error {
+  position: fixed;
+  z-index: 30;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(clamp(16px, 5vh, 52px) + 126px + env(safe-area-inset-bottom, 0px));
+  color: #f5d4a3;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 8px #000;
 }
 
 .om-symbol {
@@ -114,9 +200,39 @@ body {
   .om-glyph {
     transition: none;
   }
+
+  .mantra-track {
+    animation: none;
+  }
 }
 
 @media (max-width: 600px) {
+  .sound-toggle {
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: calc(clamp(14px, 4vh, 28px) + 66px + env(safe-area-inset-bottom, 0px));
+    min-height: 44px;
+    gap: 8px;
+    padding-inline: 12px;
+    font-size: 0.82rem;
+  }
+
+  .sound-error {
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: calc(clamp(14px, 4vh, 28px) + 116px + env(safe-area-inset-bottom, 0px));
+    max-width: calc(100vw - 24px);
+    text-align: right;
+  }
+
+  .mantra-marquee {
+    bottom: calc(clamp(14px, 4vh, 28px) + env(safe-area-inset-bottom, 0px));
+    padding-block: 11px;
+  }
+
+  .mantra-track span {
+    padding-right: 4rem;
+    font-size: 1rem;
+  }
+
   .om-glyph {
     font-size: 3.25rem;
   }
@@ -132,9 +248,24 @@ body {
   }
 }
 
-@media (orientation: landscape) and (min-width: 768px) {
+@media (orientation: landscape) {
   .stage::before {
     background-size: cover;
     background-position: center 42%;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .mantra-marquee {
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    padding-block: 7px;
+  }
+
+  .sound-toggle {
+    bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .sound-error {
+    bottom: calc(112px + env(safe-area-inset-bottom, 0px));
   }
 }

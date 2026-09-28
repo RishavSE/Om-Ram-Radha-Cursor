@@ -1,7 +1,38 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function App() {
   const symbolRefs = useRef([]);
+  const audioRef = useRef(null);
+  const soundEnabledRef = useRef(false);
+  const soundStopTimerRef = useRef(null);
+  const soundFadeIntervalRef = useRef(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundUnavailable, setSoundUnavailable] = useState(false);
+  const mantra = 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् । उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात् ॥';
+
+  const toggleSound = () => {
+    const audio = audioRef.current;
+    if (!audio) {
+      setSoundUnavailable(true);
+      return;
+    }
+
+    if (soundEnabledRef.current) {
+      soundEnabledRef.current = false;
+      setSoundEnabled(false);
+      window.clearTimeout(soundStopTimerRef.current);
+      window.clearInterval(soundFadeIntervalRef.current);
+      audio.pause();
+      audio.currentTime = 0;
+      audio.playbackRate = 1;
+      audio.volume = 0.72;
+      return;
+    }
+
+    soundEnabledRef.current = true;
+    setSoundEnabled(true);
+    setSoundUnavailable(false);
+  };
 
   useEffect(() => {
     const symbols = symbolRefs.current.filter(Boolean);
@@ -11,6 +42,37 @@ function App() {
     let frameId = null;
     let previousTime = 0;
     let settleTimer = null;
+    const audio = audioRef.current;
+
+    const startMantra = () => {
+      if (!soundEnabledRef.current || !audio) return;
+      window.clearInterval(soundFadeIntervalRef.current);
+      audio.playbackRate = 1;
+      audio.volume = 0.72;
+      if (audio.paused) {
+        void audio.play().catch(() => setSoundUnavailable(true));
+      }
+    };
+
+    const fadeMantra = () => {
+      if (!audio || audio.paused) return;
+      audio.playbackRate = 0.88;
+      const startingVolume = audio.volume;
+      const fadeStartedAt = performance.now();
+      window.clearInterval(soundFadeIntervalRef.current);
+      soundFadeIntervalRef.current = window.setInterval(() => {
+        const progress = Math.min((performance.now() - fadeStartedAt) / 1400, 1);
+        audio.volume = startingVolume * (1 - progress);
+        if (progress === 1) {
+          window.clearInterval(soundFadeIntervalRef.current);
+          soundFadeIntervalRef.current = null;
+          audio.pause();
+          audio.currentTime = 0;
+          audio.playbackRate = 1;
+          audio.volume = 0.72;
+        }
+      }, 40);
+    };
 
     const placeSymbols = () => {
       positions.forEach((position, index) => {
@@ -45,6 +107,13 @@ function App() {
     };
 
     const moveSymbol = (event) => {
+      if (event.type === 'pointermove' && soundEnabledRef.current) {
+        window.clearTimeout(soundStopTimerRef.current);
+        startMantra();
+        soundStopTimerRef.current = window.setTimeout(() => {
+          fadeMantra();
+        }, 320);
+      }
       target.x = event.clientX;
       target.y = event.clientY;
       symbols.forEach((symbol) => symbol.classList.add('is-active'));
@@ -77,7 +146,11 @@ function App() {
       window.removeEventListener('pointermove', moveSymbol);
       window.removeEventListener('pointerdown', moveSymbol);
       window.clearTimeout(settleTimer);
+      window.clearTimeout(soundStopTimerRef.current);
+      window.clearInterval(soundFadeIntervalRef.current);
       if (frameId !== null) window.cancelAnimationFrame(frameId);
+      soundEnabledRef.current = false;
+      if (audio) audio.pause();
     };
   }, []);
 
@@ -104,6 +177,31 @@ function App() {
           </div>
         );
       })}
+      <div className="mantra-marquee">
+        <div className="mantra-track">
+          <span>{mantra}</span>
+          <span aria-hidden="true">{mantra}</span>
+        </div>
+      </div>
+      <audio
+        ref={audioRef}
+        src="/ommantra.mp3"
+        hidden
+        preload="auto"
+        loop
+        onError={() => setSoundUnavailable(true)}
+      />
+      <button
+        className="sound-toggle"
+        type="button"
+        aria-pressed={soundEnabled}
+        aria-label={soundEnabled ? 'Turn mantra sound off' : 'Turn mantra sound on'}
+        onClick={toggleSound}
+      >
+        <span aria-hidden="true">ॐ</span>
+        {soundEnabled ? 'Mantra sound on' : 'Enable mantra sound'}
+      </button>
+      {soundUnavailable && <span className="sound-error" role="status">Mantra audio could not be played.</span>}
     </main>
   );
 }

@@ -8,7 +8,29 @@ function App() {
   const soundFadeIntervalRef = useRef(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [soundUnavailable, setSoundUnavailable] = useState(false);
-  const mantra = 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् । उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात् ॥';
+  const [activeView, setActiveView] = useState('om');
+  const mantra = activeView === 'om'
+    ? 'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् । उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात् ॥'
+    : 'श्री राम जय राम जय जय राम । सीता राम सीता राम जय जय राम ॥';
+
+  const selectView = (view) => {
+    const audio = audioRef.current;
+    setActiveView(view);
+    soundEnabledRef.current = true;
+    setSoundEnabled(true);
+    setSoundUnavailable(false);
+    if (!audio) return;
+
+    window.clearTimeout(soundStopTimerRef.current);
+    window.clearInterval(soundFadeIntervalRef.current);
+    audio.pause();
+    audio.src = view === 'om' ? '/ommantra.mp3' : '/ram%20jaap.mp3';
+    audio.currentTime = 0;
+    audio.playbackRate = 1;
+    audio.volume = 0.72;
+    audio.load();
+    void audio.play().catch(() => setSoundUnavailable(true));
+  };
 
   const toggleSound = () => {
     const audio = audioRef.current;
@@ -155,7 +177,28 @@ function App() {
   }, []);
 
   return (
-    <main className="stage" aria-label="Om cursor experience">
+    <main className={`stage stage--${activeView}`} aria-label={`${activeView === 'om' ? 'Om' : 'Ram'} cursor experience`}>
+      <header className="view-switcher">
+        <nav className="view-tabs" aria-label="Choose cursor">
+          <button
+            type="button"
+            className={activeView === 'om' ? 'view-tab is-selected' : 'view-tab'}
+            aria-pressed={activeView === 'om'}
+            onClick={() => selectView('om')}
+          >
+            <span aria-hidden="true">ॐ</span> Om
+          </button>
+          <button
+            type="button"
+            className={activeView === 'ram' ? 'view-tab is-selected' : 'view-tab'}
+            aria-pressed={activeView === 'ram'}
+            onClick={() => selectView('ram')}
+          >
+            <span aria-hidden="true">राम</span> Ram
+          </button>
+        </nav>
+      </header>
+      {activeView === 'ram' && <div className="ram-watermark" aria-hidden="true">श्री राम</div>}
       {Array.from({ length: 12 }, (_, index) => {
         const scale = 1 - index * 0.045;
         return (
@@ -164,7 +207,7 @@ function App() {
             ref={(element) => {
               symbolRefs.current[index] = element;
             }}
-            className={`om-symbol trail-${index}`}
+            className={`om-symbol trail-${index}${activeView === 'ram' ? ' ram-symbol' : ''}`}
             aria-hidden="true"
             style={{
               '--rest-scale': 0.58 * scale,
@@ -173,7 +216,7 @@ function App() {
               zIndex: 20 - index,
             }}
           >
-            <span className="om-glyph">ॐ</span>
+            <span className="om-glyph">{activeView === 'om' ? 'ॐ' : 'राम'}</span>
           </div>
         );
       })}
@@ -195,10 +238,10 @@ function App() {
         className="sound-toggle"
         type="button"
         aria-pressed={soundEnabled}
-        aria-label={soundEnabled ? 'Turn mantra sound off' : 'Turn mantra sound on'}
+        aria-label={soundEnabled ? 'Turn mantra sound off' : `Turn ${activeView === 'om' ? 'Om' : 'Ram'} sound on`}
         onClick={toggleSound}
       >
-        <span aria-hidden="true">ॐ</span>
+        <span aria-hidden="true">{activeView === 'om' ? 'ॐ' : 'राम'}</span>
         {soundEnabled ? ' sound on' : 'Enable sound'}
       </button>
       {soundUnavailable && <span className="sound-error" role="status">Mantra audio could not be played.</span>}

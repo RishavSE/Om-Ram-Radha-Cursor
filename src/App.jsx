@@ -16,8 +16,6 @@ function App() {
   const selectView = (view) => {
     const audio = audioRef.current;
     setActiveView(view);
-    soundEnabledRef.current = true;
-    setSoundEnabled(true);
     setSoundUnavailable(false);
     if (!audio) return;
 
@@ -29,7 +27,6 @@ function App() {
     audio.playbackRate = 1;
     audio.volume = 0.72;
     audio.load();
-    void audio.play().catch(() => setSoundUnavailable(true));
   };
 
   const toggleSound = () => {
@@ -129,7 +126,7 @@ function App() {
     };
 
     const moveSymbol = (event) => {
-      if (event.type === 'pointermove' && soundEnabledRef.current) {
+      if ((event.type === 'pointermove' || event.type === 'pointerdown') && soundEnabledRef.current) {
         window.clearTimeout(soundStopTimerRef.current);
         startMantra();
         soundStopTimerRef.current = window.setTimeout(() => {

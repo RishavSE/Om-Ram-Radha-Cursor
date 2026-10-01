@@ -54,7 +54,7 @@ npm run build
 The responsive background image is served locally from:
 
 ```text
-public/mahadev.jpg
+public/mahadev.jpeg
 ```
 
 Make sure this file is present if you want the background to display correctly.
@@ -87,11 +87,11 @@ For permission requests, please contact the copyright holder through the contact
 
 ## ⚠️ Third-Party Assets
 
-The `public/mahadev.jpg` background image may be subject to separate copyright or usage restrictions. You are responsible for ensuring that you have the appropriate rights to use or redistribute any third-party assets included with this project.
+The `public/mahadev.jpeg` background image may be subject to separate copyright or usage restrictions. You are responsible for ensuring that you have the appropriate rights to use or redistribute any third-party assets included with this project.
 
 ## 🙏 Purpose
 
 This project was created as an interactive frontend experiment and learning project using React and Vite.
  build`.
 
-The responsive background image is served locally from `public/mahadev.jpg`.
+The responsive background image is served locally from `public/mahadev.jpeg`.
